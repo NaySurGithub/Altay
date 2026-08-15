@@ -37,6 +37,8 @@ use pocketmine\block\Trapdoor;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Living;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
@@ -52,6 +54,8 @@ class WindCharge extends Throwable{
 
 	protected float $damage = 1.0;
 
+	private ?Entity $directionChanged = null;
+
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.3125, 0.3125); }
@@ -59,6 +63,20 @@ class WindCharge extends Throwable{
 	protected function getInitialGravity() : float{ return 0.0; }
 
 	protected function getInitialDragMultiplier() : float{ return 0.01; }
+
+	public function attack(EntityDamageEvent $source) : void{
+		if(
+			$this->directionChanged === null &&
+			$source instanceof EntityDamageByEntityEvent
+		){
+			$damager = $source->getDamager();
+			$this->directionChanged = $damager;
+			$this->setMotion($damager->getDirectionVector());
+			return;
+		}
+
+		parent::attack($source);
+	}
 
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
