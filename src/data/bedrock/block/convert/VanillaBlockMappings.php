@@ -616,6 +616,7 @@ final class VanillaBlockMappings{
 
 		$reg->mapModel(Model::create(Blocks::GLOW_LICHEN(), Ids::GLOW_LICHEN)->properties([$commonProperties->multiFacingFlags]));
 		$reg->mapModel(Model::create(Blocks::RESIN_CLUMP(), Ids::RESIN_CLUMP)->properties([$commonProperties->multiFacingFlags]));
+		$reg->mapModel(Model::create(Blocks::SCULK_VEIN(), Ids::SCULK_VEIN)->properties([$commonProperties->multiFacingFlags]));
 
 		$reg->mapModel(Model::create(Blocks::VINES(), Ids::VINE)->properties([
 			new ValueSetFromIntProperty(

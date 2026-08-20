@@ -710,6 +710,7 @@
         "SANDSTONE_STAIRS": 8,
         "SANDSTONE_WALL": 162,
         "SCULK": 1,
+        "SCULK_VEIN": 64,
         "SEAGRASS": 3,
         "SEA_LANTERN": 1,
         "SEA_PICKLE": 8,
