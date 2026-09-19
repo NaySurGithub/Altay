@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Living;
+use pocketmine\math\Vector3;
 
 class CrossbowFireworkRocket extends FireworkRocket{
 
@@ -34,8 +35,15 @@ class CrossbowFireworkRocket extends FireworkRocket{
 	 */
 	private const OWNER_IMMUNITY_TICKS = 2;
 
+	private ?Vector3 $lastMoveStart = null;
+
 	protected function tickFlight() : void{
 		//unlike a rocket launched from the ground, this one flies straight towards where the crossbow was aimed at
+	}
+
+	protected function move(float $dx, float $dy, float $dz) : void{
+		$this->lastMoveStart = $this->location->asVector3();
+		parent::move($dx, $dy, $dz);
 	}
 
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
@@ -51,8 +59,13 @@ class CrossbowFireworkRocket extends FireworkRocket{
 
 	private function hitEntity() : ?Living{
 		$owningEntityId = $this->getOwningEntityId();
-		foreach($this->getWorld()->getCollidingEntities($this->boundingBox, $this) as $entity){
-			if(!$entity instanceof Living){
+		$end = $this->location->asVector3();
+		$start = $this->lastMoveStart ?? $end;
+		$delta = $end->subtractVector($start);
+		$halfWidth = $this->getSize()->getWidth() / 2;
+
+		foreach($this->getWorld()->getNearbyEntities($this->boundingBox->addCoord(-$delta->x, -$delta->y, -$delta->z), $this) as $entity){
+			if(!$entity instanceof Living || !$entity->canBeCollidedWith()){
 				continue;
 			}
 
@@ -60,7 +73,10 @@ class CrossbowFireworkRocket extends FireworkRocket{
 				continue;
 			}
 
-			return $entity;
+			$entityBB = $entity->getBoundingBox()->expandedCopy($halfWidth, $halfWidth, $halfWidth);
+			if($entityBB->isVectorInside($end) || $entityBB->calculateIntercept($start, $end) !== null){
+				return $entity;
+			}
 		}
 
 		return null;

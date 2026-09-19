@@ -263,6 +263,9 @@ class Crossbow extends Tool implements Releasable{
 		$entity = new ArrowEntity($origin, $player, true);
 		$entity->setMotion($direction);
 		$entity->setPiercing($this->getEnchantmentLevel(VanillaEnchantments::PIERCING()));
+		if($angle !== 0.0){
+			$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
+		}
 
 		$ev = new EntityShootBowEvent($player, $this, $entity, self::SHOOT_FORCE);
 		if($player->isSpectator()){

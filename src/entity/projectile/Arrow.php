@@ -70,6 +70,7 @@ class Arrow extends Projectile{
 	protected int $collideTicks = 0;
 	protected bool $critical = false;
 	protected int $piercing = 0;
+	private bool $piercedThisMove = false;
 
 	/**
 	 * Entities the arrow already went through, so that it doesn't damage them again on the next tick.
@@ -184,6 +185,18 @@ class Arrow extends Projectile{
 		return count($this->piercedEntities) > $this->piercing;
 	}
 
+	/**
+	 * A piercing arrow keeps flying after going through an entity, so it must not be left in the "stuck" state that
+	 * {@link Projectile::move()} puts it in after a hit, otherwise it ignores every entity during its next step.
+	 */
+	protected function move(float $dx, float $dy, float $dz) : void{
+		parent::move($dx, $dy, $dz);
+		if($this->piercedThisMove){
+			$this->isCollided = $this->onGround = false;
+			$this->piercedThisMove = false;
+		}
+	}
+
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
 		$this->piercedEntities[$entityHit->getId()] = true;
 
@@ -192,6 +205,7 @@ class Arrow extends Projectile{
 		if(!$this->isFlaggedForDespawn()){
 			//without this the projectile code would zero the motion, stopping the arrow inside the entity it just went through
 			$this->motion = $this->motion->multiply(self::PIERCING_SPEED_MULTIPLIER);
+			$this->piercedThisMove = true;
 		}
 
 		if($this->punchKnockback > 0){
