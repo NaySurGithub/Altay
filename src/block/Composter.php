@@ -151,6 +151,18 @@ class Composter extends Transparent{
 		return true;
 	}
 
+	/**
+	 * Scheduled updates are not saved, so a composter which was left at its full level (chunk unloaded or server
+	 * restarted during the delay) finishes composting on a random tick instead of staying stuck forever.
+	 */
+	public function ticksRandomly() : bool{
+		return $this->fillLevel === self::FULL_FILL_LEVEL;
+	}
+
+	public function onRandomTick() : void{
+		$this->onScheduledUpdate();
+	}
+
 	public function onScheduledUpdate() : void{
 		if($this->fillLevel === self::FULL_FILL_LEVEL){
 			$this->position->getWorld()->setBlock($this->position, $this->setFillLevel(self::MAX_FILL_LEVEL));
@@ -167,6 +179,7 @@ class Composter extends Transparent{
 		}
 
 		return match($item->getTypeId()){
+			ItemTypeIds::BAMBOO,
 			ItemTypeIds::BEETROOT_SEEDS,
 			ItemTypeIds::DRIED_KELP,
 			ItemTypeIds::GLOW_BERRIES,
@@ -205,6 +218,7 @@ class Composter extends Transparent{
 			BlockTypeIds::HANGING_ROOTS,
 			BlockTypeIds::JUNGLE_LEAVES,
 			BlockTypeIds::JUNGLE_SAPLING,
+			BlockTypeIds::KELP,
 			BlockTypeIds::MANGROVE_LEAVES,
 			BlockTypeIds::MANGROVE_ROOTS,
 			BlockTypeIds::OAK_LEAVES,
@@ -259,8 +273,8 @@ class Composter extends Transparent{
 			BlockTypeIds::WARPED_ROOTS,
 			BlockTypeIds::WHEAT,
 			BlockTypeIds::WHITE_TULIP,
-			BlockTypeIds::WITHER_ROSE => 65,
-			//BlockTypeIds::STRAW_BED => 65, //TODO: uncomment when bedrock-1.26.50 is merged
+			BlockTypeIds::WITHER_ROSE,
+			BlockTypeIds::STRAW_BED => 65,
 			BlockTypeIds::BROWN_MUSHROOM_BLOCK,
 			BlockTypeIds::FLOWERING_AZALEA,
 			BlockTypeIds::HAY_BALE,

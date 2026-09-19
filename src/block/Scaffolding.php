@@ -124,13 +124,14 @@ class Scaffolding extends Transparent implements Fallable{
 	}
 
 	/**
-	 * A scaffolding sitting on a solid block is fully stable. Otherwise it inherits the stability of the
+	 * A scaffolding sitting on a block with a full top face is fully stable. Otherwise it inherits the stability of the
 	 * scaffolding below it, or the stability of the closest horizontal neighbour plus one, which is what limits
 	 * how far a scaffolding bridge can reach away from its support.
 	 */
 	private function recalculateStability(Position $position) : int{
 		$world = $position->getWorld();
-		if($world->getBlock($position->getSide(Facing::DOWN))->isSolid()){
+		$below = $world->getBlock($position->getSide(Facing::DOWN));
+		if(!$below instanceof Scaffolding && $below->getSupportType(Facing::UP) === SupportType::FULL){
 			return self::MIN_STABILITY;
 		}
 
