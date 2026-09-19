@@ -141,6 +141,10 @@ class MossBlock extends Opaque{
 			return;
 		}
 
+		if(!$this->growsAzaleas()){
+			return;
+		}
+
 		if($roll < 0.575){
 			$world->setBlockAt($x, $y, $z, VanillaBlocks::AZALEA());
 			return;
@@ -157,6 +161,10 @@ class MossBlock extends Opaque{
 
 	protected function getMossCarpet() : ?Block{
 		return VanillaBlocks::MOSS_CARPET();
+	}
+
+	protected function growsAzaleas() : bool{
+		return true;
 	}
 
 	private function canConvertToMoss(Block $block) : bool{

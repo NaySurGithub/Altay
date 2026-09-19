@@ -35,4 +35,8 @@ class PaleMossBlock extends MossBlock{
 		//TODO: pale moss carpet.
 		return null;
 	}
+
+	protected function growsAzaleas() : bool{
+		return false;
+	}
 }
