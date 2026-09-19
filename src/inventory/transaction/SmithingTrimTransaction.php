@@ -105,6 +105,6 @@ class SmithingTrimTransaction extends InventoryTransaction{
 			throw new AssumptionFailedError("Expected that equipment and output are not null before executing the event");
 		}
 
-		return true;
+		return parent::callExecuteEvent();
 	}
 }

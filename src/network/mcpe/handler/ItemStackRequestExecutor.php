@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\SmithingTableInventory;
 use pocketmine\crafting\CraftingResultTransfer;
+use pocketmine\crafting\ShapelessRecipe;
 use pocketmine\crafting\SmithingTrimRecipe;
 use pocketmine\data\bedrock\item\ArmorTrimIdMap;
 use pocketmine\inventory\Inventory;
@@ -266,6 +267,10 @@ class ItemStackRequestExecutor{
 		//CraftRecipeAuto may leave the crafting grid empty; container NBT is copied when
 		//CraftingConsumeInput is handled below (needed for shulker box dyeing etc.)
 		$craftingResults = $recipe->getResultsFor($this->player->getCraftingGrid());
+		$window = $this->player->getCurrentWindow();
+		if($recipe instanceof ShapelessRecipe && $window instanceof SmithingTableInventory){
+			CraftingResultTransfer::transferSmithingBaseNamedTag($recipe, $window->getContents(), $craftingResults);
+		}
 		foreach($craftingResults as $k => $craftingResult){
 			$craftingResult->setCount($craftingResult->getCount() * $repetitions);
 			$this->craftingResults[$k] = $craftingResult;
