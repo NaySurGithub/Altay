@@ -114,6 +114,13 @@ abstract class Durable extends Item{
 	abstract public function getMaxDurability() : int;
 
 	/**
+	 * Returns whether the given item can be used to repair this item in an anvil.
+	 */
+	public function isValidRepairMaterial(Item $material) : bool{
+		return false;
+	}
+
+	/**
 	 * Returns whether the item is broken.
 	 */
 	public function isBroken() : bool{
