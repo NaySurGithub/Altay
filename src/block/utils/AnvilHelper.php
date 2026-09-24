@@ -71,7 +71,7 @@ final class AnvilHelper{
 				}
 			}else{
 				$materialIsBook = $material instanceof EnchantedBook && $material->hasEnchantments();
-				if(!$materialIsBook && $material->getTypeId() !== $input->getTypeId()){
+				if(!$materialIsBook && (!$output instanceof Durable || $material->getTypeId() !== $input->getTypeId())){
 					return null;
 				}
 				if(!$materialIsBook && $output instanceof Durable && $material instanceof Durable && $output->getDamage() > 0){
@@ -92,7 +92,7 @@ final class AnvilHelper{
 
 		$renameOnly = $materialCost === 0 && $renamed;
 		$total = $input->getRepairCost() + ($materialCost > 0 ? $material->getRepairCost() : 0) + $cost;
-		if($input->getCount() > 1){
+		if($input->getCount() > 1 && $materialCost > 0 && $material->hasEnchantments()){
 			$total = max($total, self::TOO_EXPENSIVE_COST);
 		}
 		if($renameOnly && $total >= self::TOO_EXPENSIVE_COST){
