@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\crafting\AnvilCraftResult;
+use pocketmine\event\player\PlayerUseAnvilEvent;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 use function count;
@@ -117,5 +118,18 @@ class AnvilTransaction extends InventoryTransaction{
 		if($this->source->hasFiniteResources()){
 			$this->source->getXpManager()->subtractXpLevels($this->result->getXpCost());
 		}
+	}
+
+	protected function callExecuteEvent() : bool{
+		$event = new PlayerUseAnvilEvent(
+			$this->source,
+			$this,
+			$this->result->getInput(),
+			$this->result->getMaterial(),
+			$this->result->getOutput(),
+			$this->result->getXpCost()
+		);
+		$event->call();
+		return !$event->isCancelled();
 	}
 }
