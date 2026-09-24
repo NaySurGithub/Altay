@@ -84,6 +84,8 @@ class AnvilTransaction extends InventoryTransaction{
 	/**
 	 * @param Item[] $expected
 	 * @param Item[] $inputs
+	 * @phpstan-param list<Item> $expected
+	 * @phpstan-param array<int, Item> $inputs
 	 */
 	private function consumeExpectedInputs(array $expected, array $inputs) : void{
 		foreach($expected as $expectedItem){
