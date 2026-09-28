@@ -28,6 +28,7 @@ namespace pocketmine\item;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\Utils;
+use function intdiv;
 use function min;
 
 abstract class Durable extends Item{
@@ -118,6 +119,20 @@ abstract class Durable extends Item{
 	 */
 	public function isValidRepairMaterial(Item $material) : bool{
 		return false;
+	}
+
+	/**
+	 * Returns the durability restored by one unit of the given repair material in an anvil.
+	 */
+	public function getRepairAmount(Item $material) : int{
+		return intdiv($this->getMaxDurability(), 4);
+	}
+
+	/**
+	 * Returns the durability restored when the given item of the same type is combined into this one in an anvil.
+	 */
+	public function getCombineRepairAmount(Durable $material) : int{
+		return ($material->getMaxDurability() - $material->getDamage()) + intdiv($this->getMaxDurability() * 12, 100);
 	}
 
 	/**

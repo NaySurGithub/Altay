@@ -43,8 +43,6 @@ final class AnvilHelper{
 	public const MAX_NAME_LENGTH = 30;
 	public const TOO_EXPENSIVE_COST = 40;
 
-	private const COMBINE_REPAIR_BONUS_PERCENT = 12;
-
 	private function __construct(){
 
 	}
@@ -65,7 +63,7 @@ final class AnvilHelper{
 
 		if(!$material->isNull()){
 			if($output instanceof Durable && $output->isValidRepairMaterial($material)){
-				$materialCost = self::repairWithMaterial($output, $material->getCount(), $cost);
+				$materialCost = self::repairWithMaterial($output, $material, $cost);
 				if($materialCost === 0){
 					return null;
 				}
@@ -123,8 +121,9 @@ final class AnvilHelper{
 		return $name;
 	}
 
-	private static function repairWithMaterial(Durable $output, int $available, int &$cost) : int{
-		$repairPerUnit = max(1, intdiv($output->getMaxDurability(), 4));
+	private static function repairWithMaterial(Durable $output, Item $material, int &$cost) : int{
+		$available = $material->getCount();
+		$repairPerUnit = max(1, $output->getRepairAmount($material));
 		$used = 0;
 		while($output->getDamage() > 0 && $used < $available){
 			$output->setDamage($output->getDamage() - min($output->getDamage(), $repairPerUnit));
@@ -137,9 +136,8 @@ final class AnvilHelper{
 
 	private static function combineDurability(Durable $output, Durable $material) : void{
 		$maxDurability = $output->getMaxDurability();
-		$remaining = ($maxDurability - $output->getDamage()) + ($material->getMaxDurability() - $material->getDamage());
-		$bonus = intdiv($maxDurability * self::COMBINE_REPAIR_BONUS_PERCENT, 100);
-		$output->setDamage(max(0, $maxDurability - ($remaining + $bonus)));
+		$remaining = ($maxDurability - $output->getDamage()) + $output->getCombineRepairAmount($material);
+		$output->setDamage(max(0, $maxDurability - $remaining));
 	}
 
 	private static function combineEnchantments(Item $output, Item $material, bool $materialIsBook, bool $creative, int &$cost) : bool{
