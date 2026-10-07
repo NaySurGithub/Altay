@@ -49,7 +49,7 @@ class CrossbowFireworkRocket extends FireworkRocket{
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if(!$this->isFlaggedForDespawn() && $this->hitEntity() !== null){
+		if(!$this->isFlaggedForDespawn() && ($this->isCollided || $this->hitEntity() !== null)){
 			$this->flagForDespawn();
 			$this->explode();
 		}
