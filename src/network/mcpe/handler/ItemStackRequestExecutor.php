@@ -338,6 +338,11 @@ class ItemStackRequestExecutor{
 
 		$name = $this->request->getFilterStrings()[$filterStringIndex] ?? null;
 		if($name !== null){
+			try{
+				Utils::checkUTF8($name);
+			}catch(\InvalidArgumentException $e){
+				throw new ItemStackRequestProcessException("Invalid anvil item name: " . $e->getMessage(), 0, $e);
+			}
 			$name = AnvilHelper::sanitizeName($name);
 		}
 
