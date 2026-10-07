@@ -253,21 +253,18 @@ class Crossbow extends Tool implements Releasable{
 		if($ammo instanceof FireworkRocket){
 			$entity = new CrossbowFireworkRocket($origin, self::FIREWORK_FLIGHT_TIME + mt_rand(0, self::FIREWORK_FLIGHT_TIME_RANDOM), $ammo->getExplosions());
 			$entity->setOwningEntity($player);
-			$entity->setMotion($direction->multiply(self::FIREWORK_SHOOT_FORCE));
-			$entity->spawnToAll();
-			$player->getWorld()->addSound($location, new CrossbowShootSound());
-
-			return true;
+			$force = self::FIREWORK_SHOOT_FORCE;
+		}else{
+			$entity = new ArrowEntity($origin, $player, true);
+			$entity->setPiercing($this->getEnchantmentLevel(VanillaEnchantments::PIERCING()));
+			if($angle !== 0.0){
+				$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
+			}
+			$force = self::SHOOT_FORCE;
 		}
-
-		$entity = new ArrowEntity($origin, $player, true);
 		$entity->setMotion($direction);
-		$entity->setPiercing($this->getEnchantmentLevel(VanillaEnchantments::PIERCING()));
-		if($angle !== 0.0){
-			$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
-		}
 
-		$ev = new EntityShootBowEvent($player, $this, $entity, self::SHOOT_FORCE);
+		$ev = new EntityShootBowEvent($player, $this, $entity, $force);
 		if($player->isSpectator()){
 			$ev->cancel();
 		}
